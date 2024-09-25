@@ -15,7 +15,13 @@ def load_yaml(file_path):
 class Chaos_Thread:
     def __init__(self, chaos_yaml_full_path, cm_chaos_yml_path, logger):
         self.chaos_yaml_data = load_yaml(chaos_yaml_full_path)
-        self.tasks = self.chaos_yaml_data.get('chaos', {}).get('cm-chaos', []) + self.chaos_yaml_data.get('chaos', {}).get('sql-chaos', [])
+        cm_chaos = self.chaos_yaml_data.get('chaos', {}).get('cm-chaos', [])
+        sql_chaos = self.chaos_yaml_data.get('chaos', {}).get('sql-chaos', [])
+        if cm_chaos is None:
+            cm_chaos = []
+        if sql_chaos is None:
+            sql_chaos = []
+        self.tasks = cm_chaos + sql_chaos
         self.mode = self.chaos_yaml_data.get('chaos', {}).get('chaos_combination', {}).get('mode', 'in-turn')
         self.namespace = self.chaos_yaml_data.get('chaos', {}).get('namespace', {})
         self.cm_chaos_yml_path = cm_chaos_yml_path

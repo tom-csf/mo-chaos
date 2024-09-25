@@ -28,15 +28,11 @@ class Subtask_Test_Thread(threading.Thread):
         work_path = os.path.join(self.tool_parent_dir_path, self.task['work-path'])
         self.logger.info(f"Starting task: {self.task['name']} in {work_path}")
         os.chdir(work_path)
-        cmd_no = 1
         for step in self.task['run-steps']:
             self.logger.info(f"Executing {self.task['name']} Subtask_Test command: {step['command']}")
-            command_log_file = os.path.join(self.test_report_path, self.task['name'] + "_cmd_" + str(cmd_no) + ".log")
-            cmd_no = cmd_no + 1
-            with open(command_log_file, "w") as f:
-                # Execute the command and redirect output to the log file
-                process = subprocess.Popen(step['command'], shell=True, stdout=f, stderr=subprocess.STDOUT)
-                process.wait()  # Wait for the command to complete
+            # Execute the command and redirect output to the log file
+            process = subprocess.Popen(step['command'], shell=True, stderr=subprocess.STDOUT)
+            process.wait()  # Wait for the command to complete
 
             if process.returncode == 0:
                 self.logger.info(f"Step completed successfully: {step['command']}")
@@ -61,20 +57,15 @@ class Subtask_Verify_Thread(threading.Thread):
         work_path = os.path.join(self.tool_parent_dir_path, self.task['work-path'])
         self.logger.info(f"Starting task: {self.task['name']} in {work_path}")
         os.chdir(work_path)
-        verify_no = 1
         # 如果需要等待subtaskA结束
         if not self.is_parallel:
             self.subtask_test_event.wait()
         while self.running:
             for step in self.task['verify']:
                 self.logger.info(f"Executing {self.task['name']} Subtask_Verify command: {step['command']}")
-                verify_log_file = os.path.join(self.test_report_path,
-                                               self.task['name'] + "_verify_" + str(verify_no) + ".log")
-                verify_no = verify_no + 1
-                with open(verify_log_file, "w") as f:
-                    # Execute the command and redirect output to the log file
-                    process = subprocess.Popen(step['command'], shell=True, stdout=f, stderr=subprocess.STDOUT)
-                    process.wait()  # Wait for the command to complete
+                # Execute the command and redirect output to the log file
+                process = subprocess.Popen(step['command'], shell=True, stderr=subprocess.STDOUT)
+                process.wait()  # Wait for the command to complete
                 if process.returncode == 0:
                     self.logger.info(f"Step completed successfully: {step['command']}")
                 else:

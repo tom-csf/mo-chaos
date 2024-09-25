@@ -9,12 +9,12 @@
      test-report/ : 测试工具产生的log 存放的目录
 
 ## 部署 chaos-mesh
-   下载chaos-mesh的helm chart到执行机器上面
-   创建ns kubectl create ns <namespace>
-   之后在ns 创建下载镜像用户密码的 secret，如果没有权限联系吴叶磊开通权限 
-   ps：机房机器无法下载海外镜像，目前将镜像转存到公司阿里云镜像repo里面
-   kubectl create secret docker-registry aliyun --docker-server=registry.cn-hangzhou.aliyuncs.com/mocloud --docker-username= --docker-password= -n <namespace>
-   helm部署： helm 部署命令 helm install chaos-mesh ./chaos-mesh -n=<namespace> --set chaosDaemon.runtime=containerd --set chaosDaemon.socketPath=/run/containerd/containerd.sock
+     下载chaos-mesh的helm chart到执行机器上面
+     创建ns kubectl create ns <namespace>
+     之后在ns 创建下载镜像用户密码的 secret，如果没有权限联系吴叶磊开通权限 
+     ps：机房机器无法下载海外镜像，目前将镜像转存到公司阿里云镜像repo里面
+     kubectl create secret docker-registry aliyun --docker-server=registry.cn-hangzhou.aliyuncs.com/mocloud --docker-username= --docker-password= -n <namespace>
+     helm部署： helm 部署命令 helm install chaos-mesh ./chaos-mesh -n=<namespace> --set chaosDaemon.runtime=containerd --set chaosDaemon.socketPath=/run/containerd/containerd.sock
    
 ## 使用命令
    python mo_chaos_test.py -c <chaos yaml文件名称>  -t  <test yaml文件名称>
@@ -120,9 +120,6 @@ chaos:
                  random-turn（随机选择cm-chaos 和 sql-chaos）
     4、节点mo-env: 配置连接mo的基本配置 （host、port、user、password）
     5、节点namespace: 代表服务部署对应的ns
-    
-## chaos yaml文件配置路径
-   放入config 目录下，执行的时候 python mo_chaos_test.py -c 带文件名称不要带路径，程序只会到config找同名文件
 
 
 ## test yaml 文件配置介绍
@@ -156,6 +153,9 @@ tasks:
          verify: 配置验证测试结果的执行命令
          verify-mode： parallel代表和测试任务一起运行循环执行，after代表执行完test任务命令之后再执行
          log-paths: 配置测试工具生成的log文件，跑完任务会cp 到 test-report/ 目录下
+
+## yaml文件配置路径
+   放入config 目录下，执行的时候 python mo_chaos_test.py -c <chaos yaml文件名称>  -t  <test yaml文件名称> 带文件名称不要带路径，程序只会到config找同名文件
 
 ## 使用TIPS
      A、在配置chaos-mesh单个故障时不要配置schedule类型故障，把周期性任务通过交给程序（times、interval）来做，
